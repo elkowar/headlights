@@ -8,7 +8,6 @@
 :- use_module(library(yaml)).
 
 
-
 :- http_handler(root(Path), 
                 redir_request(Path), 
                 [method(_Method), methods([get])]
