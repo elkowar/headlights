@@ -1,13 +1,17 @@
+:- module(server, [server/1]).
+
 :- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_unix_daemon)).
 :- use_module(library(http/http_dispatch)).
 :- use_module(library(http/http_header)).
 :- use_module(library(http/http_error)).
-:- use_module(library(yaml)).
 :- use_module(library(http/http_log)).
+:- use_module(library(http/http_client)).
+:- use_module(library(yaml)).
 
 % Server
 
-:- http_handler(root(Path), redir_request(Path), [method(_Method), methods([get])]).
+:- http_handler(root(Path), redir_request(Path), []).
 
 server(Port) :-
   http_server(http_dispatch, [port(Port)]).
@@ -33,16 +37,12 @@ domain_subdomain(Domain, Subdomain) :-
 
 % redirection mappings
 
-links_file_path(Path) :- 
-  getenv("HEADLIGHTS_LINKS_PATH", Path) ; Path = "./links.yaml".
+links_data_url(Url) :- getenv("HEADLIGHTS_LINKS_URL", Url).
 
-raw_links(Text) :- 
-  links_file_path(Path), 
-  read_file_to_string(Path, Text, []).
-
-links_data(Yaml) :- 
-  raw_links(Raw), 
-  yaml_read(string(Raw), Yaml).
+links_data(Data) :-
+  links_data_url(Url),
+  http_get(Url, Raw, []),
+  yaml_read(string(Raw), Data).
 
 redirection(SubDomainV, PathV, Url) :-
   value_atom(SubDomainV, SubDomain),

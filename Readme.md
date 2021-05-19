@@ -1,20 +1,20 @@
 # Headlights
 
-A simple redirection service for elks on streets.
+A simple redirection service for elks on popular routes.
 
 ## Launching
 
 Launch the service using
 ```sh
-swipl -l server.pl -g "server(8000)."
+swipl server.pl --port=8000 --fork=false
 ```
 
 ## Configuration format
 
-Place the configuration file at the execution root, named `links.yaml`.
-Alternatively, set the `HEADLIGHTS_LINKS_PATH` environment-variable to control where the file is placed.
+The route mappings must be available under some public url.
+The URL must be provided via the environment variable `HEADLIGHTS_LINKS_URL`.
 
-The configuration file is formatted like this:
+The mappings are formatted like this:
 ```yml
 subdomain1:
   path1: https://target-url1
